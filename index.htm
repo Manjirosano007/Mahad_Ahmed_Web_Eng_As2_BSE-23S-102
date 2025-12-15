@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Registration Form</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+    }
+
+    form {
+      background: #fff;
+      padding: 20px;
+      width: 400px;
+      margin: 40px auto;
+      border-radius: 6px;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+    }
+
+    .gender-group label,
+    .terms-group label {
+      display: inline-block;
+      margin-right: 15px;
+      margin-top: 6px;
+    }
+
+    .error {
+      color: red;
+      font-size: 13px;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      width: 100%;
+    }
+
+    #summary {
+      background: #e9ffe9;
+      padding: 15px;
+      width: 400px;
+      margin: 20px auto;
+      border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<form id="regForm">
+  <h2>Registration Form</h2>
+
+  <label>First Name
+    <input type="text" id="fname">
+  </label>
+
+  <label>Last Name
+    <input type="text" id="lname">
+  </label>
+
+  <label>Surname / Family Name
+    <input type="text" id="surname">
+  </label>
+
+  <label>Email
+    <input type="email" id="email">
+  </label>
+
+  <label>Password
+    <input type="password" id="password">
+  </label>
+
+  <label>Confirm Password
+    <input type="password" id="confirmPassword">
+  </label>
+
+  <label>Gender</label>
+  <div class="gender-group" id="genderGroup">
+    <label><input type="radio" name="gender" value="Male"> Male</label>
+    <label><input type="radio" name="gender" value="Female"> Female</label>
+  </div>
+
+  <label>Country
+    <select id="country">
+      <option value="">-- Select Country --</option>
+      <option>Pakistan</option>
+      <option>India</option>
+      <option>USA</option>
+      <option>UK</option>
+    </select>
+  </label>
+
+  <div class="terms-group">
+    <label>
+      <input type="checkbox" id="terms">
+      I agree to Terms & Conditions
+    </label>
+  </div>
+
+  <button type="submit" id="submitBtn" disabled>Submit</button>
+</form>
+
+<script>
+const form = document.getElementById("regForm");
+const submitBtn = document.getElementById("submitBtn");
+
+function showError(element, message) {
+  let error = element.nextElementSibling;
+  if (!error || !error.classList.contains("error")) {
+    error = document.createElement("div");
+    error.classList.add("error");
+    element.parentNode.appendChild(error);
+  }
+  error.textContent = message;
+}
+
+function clearError(element) {
+  let error = element.nextElementSibling;
+  if (error && error.classList.contains("error")) {
+    error.textContent = "";
+  }
+}
+
+function validateForm() {
+  let valid = true;
+
+  const fname = document.getElementById("fname");
+  if (fname.value.length < 5) {
+    showError(fname, "First name must be at least 5 characters");
+    valid = false;
+  } else clearError(fname);
+
+  const email = document.getElementById("email");
+  if (!email.value.includes("@")) {
+    showError(email, "Email must contain @");
+    valid = false;
+  } else clearError(email);
+
+  const password = document.getElementById("password");
+  if (!/^(?=.*[A-Z]).{8,}$/.test(password.value)) {
+    showError(password, "Password must be 8 characters & 1 uppercase");
+    valid = false;
+  } else clearError(password);
+
+  const confirm = document.getElementById("confirmPassword");
+  if (confirm.value !== password.value || confirm.value === "") {
+    showError(confirm, "Passwords do not match");
+    valid = false;
+  } else clearError(confirm);
+
+  const gender = document.querySelector("input[name='gender']:checked");
+  if (!gender) valid = false;
+
+  const country = document.getElementById("country");
+  if (country.value === "") {
+    showError(country, "Please select a country");
+    valid = false;
+  } else clearError(country);
+
+  const terms = document.getElementById("terms");
+  if (!terms.checked) valid = false;
+
+  submitBtn.disabled = !valid;
+}
+
+form.addEventListener("input", validateForm);
+form.addEventListener("change", validateForm);
+
+form.addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const summary = document.createElement("div");
+  summary.id = "summary";
+
+  const gender = document.querySelector("input[name='gender']:checked").value;
+
+  summary.innerHTML = `
+    <h3>Registration Successful</h3>
+    <p><b>Name:</b> ${fname.value} ${lname.value}</p>
+    <p><b>Email:</b> ${email.value}</p>
+    <p><b>Country:</b> ${country.value}</p>
+    <p><b>Gender:</b> ${gender}</p>
+  `;
+
+  document.body.appendChild(summary);
+  form.reset();
+  submitBtn.disabled = true;
+});
+</script>
+
+</body>
+</html>
